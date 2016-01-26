@@ -1,5 +1,5 @@
 angular.module('Instagram', ['ngRoute', 'ngMessages', 'satellizer'])
-  .config(function($routeProvider) {
+  .config(function($routeProvider, $authProvider) {
   	$routeProvider
   	  .when('/', {
   	  	templateUrl: 'views/home.html',
