@@ -24,8 +24,8 @@ angular.module('Instagram', ['ngRoute', 'ngMessages', 'satellizer'])
 	$authProvider.oauth2({
 		name: 'instagram',
 		url: 'http://localhost:3000/auth/instagram',
-		redirectUri: 'http://localhost:8000',
-		clientId: '799d1f8ea0e44ac8b70e7f18fcacedd1',
+		redirectUri: 'https://localhost:8000',
+		clientId: '2b027aec8da74c6f884954730db217fa',
 		requiredUrlParams: ['scope'],
 		scope: ['likes'],
 		scopeDelimiter: '+',
