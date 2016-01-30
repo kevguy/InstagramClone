@@ -12,6 +12,21 @@
     "jwt-simple": "^0.2.0",
     "moment": "^2.8.3",
     "mongoose": "^4.3.6",
-    "request": "^2.44.0"
+    "request": "^2.44.0",
+    "compression": "~1.6.1"
+  },
+  "devDependencies": {
+    "gulp-concat": "~2.6.0",
+    "gulp-angular-templatecache": "~1.8.0",
+    "gulp": "~3.9.0",
+    "gulp-header": "~1.7.1",
+    "gulp-ng-annotate": "~1.1.0",
+    "gulp-recess": "~1.2.0",
+    "gulp-complexity": "~0.3.2",
+    "gulp-csso": "~1.0.1",
+    "gulp-uglify": "~1.5.1",
+    "gulp-plumber": "~1.0.1",
+    "gulp-sass": "~2.1.1",
+    "gulp-filter": "~3.0.1"
   }
 }
