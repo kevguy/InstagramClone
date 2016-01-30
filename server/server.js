@@ -30,16 +30,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-function createToken(user) {
-  var payload = {
-    exp: moment().add(14, 'days').unix(),
-    iat: moment().unix(),
-    sub: user._id
-  };
-
-  return jwt.encode(payload, config.tokenSecret);
-}
-
+/*
+ |--------------------------------------------------------------------------
+ | Login Required Middleware
+ |--------------------------------------------------------------------------
+ */
 function isAuthenticated(req, res, next) {
   if (!(req.headers && req.headers.authorization)) {
     return res.status(400).send({ message: 'You did not provide a JSON Web Token in the Authorization header.' });
@@ -64,6 +59,26 @@ function isAuthenticated(req, res, next) {
   })
 }
 
+/*
+ |--------------------------------------------------------------------------
+ | Generate JSON Web Token
+ |--------------------------------------------------------------------------
+ */
+function createToken(user) {
+  var payload = {
+    exp: moment().add(14, 'days').unix(),
+    iat: moment().unix(),
+    sub: user._id
+  };
+
+  return jwt.encode(payload, config.tokenSecret);
+}
+
+/*
+ |--------------------------------------------------------------------------
+ | Sign in with Email
+ |--------------------------------------------------------------------------
+ */
 app.post('/auth/login', function(req, res) {
   User.findOne({ email: req.body.email }, '+password', function(err, user) {
     if (!user) {
@@ -84,6 +99,11 @@ app.post('/auth/login', function(req, res) {
   });
 });
 
+/*
+ |--------------------------------------------------------------------------
+ | Create Email and Password Account
+ |--------------------------------------------------------------------------
+ */
 app.post('/auth/signup', function(req, res) {
   User.findOne({ email: req.body.email }, function(err, existingUser) {
     if (existingUser) {
@@ -108,6 +128,11 @@ app.post('/auth/signup', function(req, res) {
   });
 });
 
+/*
+ |--------------------------------------------------------------------------
+ | Sign in with Instagram
+ |--------------------------------------------------------------------------
+ */
 app.post('/auth/instagram', function(req, res) {
   var accessTokenUrl = 'https://api.instagram.com/oauth/access_token';
 
@@ -119,7 +144,7 @@ app.post('/auth/instagram', function(req, res) {
     grant_type: 'authorization_code'
   };
 
-  // Step 1\. Exchange authorization code for access token.
+  // Step 1. Exchange authorization code for access token.
   request.post({ url: accessTokenUrl, form: params, json: true }, function(error, response, body) {
 
     // Step 2a. Link user accounts.
@@ -135,7 +160,7 @@ app.post('/auth/instagram', function(req, res) {
             return res.status(400).send({ message: 'User not found.' });
           }
 
-          // Merge two accounts.
+          // Merge two accounts. Instagram account takes precedence. Email account is deleted.
           if (existingUser) {
 
             existingUser.email = localUser.email;
@@ -200,7 +225,7 @@ app.get('/api/feed', isAuthenticated, function(req, res) {
   });
 });
 
-app.get('/api/media/:id', isAuthenticated, function(req, res, next) {
+app.get('/api/media/:id', isAuthenticated, function(req, res) {
   var mediaUrl = 'https://api.instagram.com/v1/media/' + req.params.id;
   var params = { access_token: req.user.accessToken };
 
@@ -211,7 +236,7 @@ app.get('/api/media/:id', isAuthenticated, function(req, res, next) {
   });
 });
 
-app.post('/api/like', isAuthenticated, function(req, res, next) {
+app.post('/api/like', isAuthenticated, function(req, res) {
   var mediaId = req.body.mediaId;
   var accessToken = { access_token: req.user.accessToken };
   var likeUrl = 'https://api.instagram.com/v1/media/' + mediaId + '/likes';
